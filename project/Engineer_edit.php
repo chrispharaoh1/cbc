@@ -1,4 +1,3 @@
-
 <?php
 session_start(); 
 include('db_connection.php');
@@ -9,7 +8,7 @@ if(isset($_POST['submit'])){ //if form is submitted
     $description = $_POST['item-name'];
     $quantity = $_POST['item-qty'];
     $remarks = $_POST['remarks'];
-    $unit = $_POST['unit']
+    $unit = $_POST['unit'];
 
     $query = "INSERT INTO `requested_items` (`remarks`, `quantity`, `description1`, `status1`, `employee_id`, `L.P.O. No`, `D/NOTE No.`,`unit`) VALUES ('$remarks','$quantity','$description','1','$id','','','$unit')"; 
                
@@ -17,7 +16,7 @@ if(isset($_POST['submit'])){ //if form is submitted
     $run = mysqli_query($MySQLDb,$query);  
     
     if($run){
-        header("Location: ForemanIndex1.php"); die();
+        header("Location: EngineerIndex.php"); die();
     }
   }
 

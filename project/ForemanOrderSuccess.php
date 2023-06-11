@@ -1,3 +1,7 @@
+<?php
+session_start();
+    $myID = $_SESSION["userID"];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,7 +29,7 @@
                     <div class="text-center">
                         <h1>Success!</h1>
                         <p>Your requisition has been sent successfully</p>
-                        <a href="Foreman_track_requet.php" class="btn btn-outline-success">Track this order</a>
+                        <a href="Foreman_track_requet.php?id=<?php echo $myID; ?>" class="btn btn-outline-success">Track this order</a>
                     </div>
                 </div>
             </div>

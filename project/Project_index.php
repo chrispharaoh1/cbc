@@ -1,6 +1,8 @@
 <?php
+$proj = "";
+require("security.php");
 
-session_start();
+$pgID = $_SESSION["projectID"];
 
 include('db_connection.php'); 
 if($_SERVER['REQUEST_METHOD'] == 'GET'){
@@ -11,10 +13,14 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
         $id = $_GET["id"];
 
+
         $query = "SELECT * FROM project WHERE id = $id ";
         $run = mysqli_query($MySQLDb,$query); 
 
-        $row = $run->fetch_assoc();
+        if($run){
+            $row = $run->fetch_assoc();
+        }
+        
 }
 ?>
 
@@ -392,7 +398,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
              <div class='row'>
                     <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
+                    <div class="card shadow mb-4" style="width:99%;display:block; margin:auto;">
                         <div class="card-header py-3">
                             <h4 class="m-0 font-weight-bold text-primary" style="text-align:center">Project details</h4>
                         </div>
@@ -445,6 +451,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
                         </div>
                     </div>
 
+
             </div>
 
             <div class="row">
@@ -481,16 +488,117 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
             <hr>      
 
 
-            <div class='row'>
+                
+      <div class='row'>
              <!-- DataTales Example -->
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h4 class="text-gray-900" style="text-align:center">Current requsitions that requires your attention</h4>
-                    </div>
-                    <div class="card-body">
-                    </div>
+            <div class="card shadow mb-4" style="width:99%;display:block; margin:auto;">
+                <div class="card-header py-3">
+                    <?php echo $proj;?>
+                    <h4 class="text-gray-900" style="text-align:center">Current requsitions that requires your attention</h4>
+                    
                 </div>
-             </div>
+            <div class="card-body">
+
+
+           
+
+
+
+      <?php 
+      
+                    $pgCode =   $row["code"];            
+
+                    include('db_connection.php'); 
+
+                    $query = "SELECT * FROM `orders` WHERE status = '2' AND projectCode = '$pgCode'";
+                    $status = "SELECT status FROM `orders` where status < 5";
+
+                    $result_step = mysqli_query($MySQLDb,$query);
+
+
+                    //$countResult = mysqli_query($MySQLDb,$count);
+                    if($result = mysqli_query($MySQLDb,$query)){ 
+
+                        while($row = $result->fetch_assoc() ){ 
+
+                            $_SESSION["projID"] = $row["requisition_number"];
+                            $proj = $_SESSION["projID"];
+
+                           if($row["status"] == '2'){
+                                $currentStage ="40%";
+                    $perMessage = "Stage 3/6";
+                    $messageName = "Waiting Manager approval";
+                            
+                            
+                
+                        echo  "
+                                <div class='row' id='report-wraper'>
+
+
+                                <h2 style='text-align:center'>Requisition ID: ". $row["fullpgcode"] ."</h2>
+
+                                 <table class='content-table' style='width:100%'>
+                                    <thead >
+                                        <tr class='bg-gradient-info' style='color:white;'>
+                                            <th >Order No.</th>
+                                            <th style='text-align:center'>Contract No.</th>
+                                            <th style='text-align:center'>Ordered by</th>
+                                            <th style='text-align:right'>Issue Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                         <!-- PHP code to display data in the table -->
+
+
+                                        <tr>
+                                            <td><h6>". $row["requisition_number"] ."</h6></td>
+                                            <td style='text-align:center'><h6>".$row["contract_number"]."</h6></td>
+                                            <td style='text-align:center'><h6>".$row["employee_id"]."</h6></td>
+                                            <td style='text-align:right'><h6>".$row["order_date"]."</h6></td>
+                                        </tr>   
+                                        <tr>
+                                            <td colspan='4'> 
+                                                <h6 style='text-align:center'>Current stage: <i  class='fas fa-clock'></i><span style='font-weight:bold'>" .$messageName."</span><h6>
+                                                <div class='progress' style='height: 20px;'>
+                                                <div class='progress-bar bg-info' role='progressbar' style='width: ".$currentStage."' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100'>".$perMessage."</div>
+                                                </div>
+                                            </td>  
+                                        </tr> 
+                                        <tr >
+                                            <td style='display:block;margin-right:10%;'>
+                                               
+                                            </td>
+
+                                            <td>
+                                                <a href='Viewandedit.php?order=".$row["requisition_number"]."' class='btn btn-info btn-sm'>View</a>
+                                            </td>
+                                            <td>
+                                                <a href='Reject.php?order=".$row["requisition_number"]."' class='btn btn-warning btn-sm'>Reject</a>
+                                            </td>
+                                            <td>
+                                                <a href='managerApprove.php?order=".$row["requisition_number"]."' class='btn btn-success btn-sm'>Approve</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    </table>
+
+                            </div>
+                            <hr>
+                            &#160 &#160 &#160&#160&#160&#160 &#160";
+                 }
+                }
+            }
+             ?>
+
+        </div>
+    </div>
+</div>
+
+       
+
+
             </div> 
             </div>
             </div>
@@ -525,19 +633,48 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Log in?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-body">Are you sure you want to log out?</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <form action="logout.php" method="post">
+                        <button type="submit" name="logout" class="btn btn-primary" >Logout</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
+
+    <!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal top fade" id="reject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="true" data-mdb-keyboard="true">
+  <div class="modal-dialog   modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="text-align:center !important">Rejection note</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+    <form method="POST" action="Reject.php">
+        <textarea name="rejectNote" style="width:100%;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancel
+        </button>
+        <button type="submit" name="reject" class="btn btn-primary">Reject</button>
+      </div>
+    </div>
+        </form>
+  </div>
+</div>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>

@@ -1,12 +1,12 @@
 <?php
- require("security.php"); 
+ require("security2.php"); 
  $currentStage = "";
  $perMessage = "Hello"; 
  $messageName = "";
  $userID = "";
  $projectID = "";
  if(isset($_SESSION["userID"])){
-    $projectID = $_GET['id'];
+    $userID = $_SESSION["userID"];
  }
  
 ?>
@@ -21,7 +21,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Forman Home</title>
+    <title>completed orders</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -46,6 +46,9 @@
 
         table{
             width: 99% !important;
+        }
+        #cardshow{
+            margin-bottom: 50% !important;
         }
     </style>
     
@@ -72,11 +75,27 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="ForemanIndex.php">
-                
-                    <span>Current Requisitions</span></a>
+                <a class="nav-link" href="">
+                <i class="fas fa-check-double"></i>
+                    <span>completed orders</span></a>
             </li>
 
+                       <!-- Nav Item - Dashboard -->
+           <li class="nav-item active">
+           <a class="nav-link" href="">
+           <i class="fas fa-arrow-left"></i>
+           <span>Previous orders</span></a>
+           </li>
+
+                       <!-- Divider -->
+           <hr class="sidebar-divider my-0">
+
+           <!-- Nav Item - Dashboard -->
+           <li class="nav-item active">
+           <a class="nav-link" href="Foreman_track_requet.php">
+           <i class="fas fa-clock"></i>
+           <span>Tract active requests</span></a>
+           </li>
 
         </ul>
         <!-- End of Sidebar -->
@@ -273,43 +292,11 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-                    
-                    <section class="step-wizard">
-                        <h6 style="text-align:center">Progress stage Key</h6>
-                         <ul class="step-wizard-list">
-                            <li class="step-wizard-item current-item">
-                                <span class="progress-count">1</span>
-                                <span class="progress-label">Requisition</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">2</span>
-                                <span class="progress-label">Engeneer Approval</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">3</span>
-                                <span class="progress-label">Manager Approval</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">4</span>
-                                <span class="progress-label">Procurement</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">5</span>
-                                <span class="progress-label">Recieving</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">6</span>
-                                <span class="progress-label">Done</span>
-                            </li>
-                        </ul>
-                    <br>
-                    </section>
-
 
                <?php 
                     include('db_connection.php'); 
 
-                    $query = "SELECT * FROM `orders` WHERE status<5 AND `projectID` = $projectID";
+                    $query = "SELECT * FROM `orders` WHERE status=5 AND employee_id = $userID";
                     $status = "SELECT status FROM `orders` where status<6";
 
                     $result_step = mysqli_query($MySQLDb,$query);
@@ -318,6 +305,9 @@
                     //$countResult = mysqli_query($MySQLDb,$count);
                     if($result = mysqli_query($MySQLDb,$query)){ 
 
+                        $rowcount = mysqli_num_rows($result);
+                        
+                        if($rowcount>0){
                         while($row = $result->fetch_assoc() ){ 
 
                            if($row["status"] == '1'){
@@ -540,7 +530,7 @@
                     <div class='row' id='report-wraper'>
 
 
-                    <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
+                    <h2 style='margin:auto'>Requisition: ". $row["fullpgcode"] ."</h2>
 
                      <table class='content-table' style='width:100%'>
                         <thead>
@@ -572,6 +562,19 @@
                                     </div>
                                 </td>  
                             </tr> 
+                            <tr>
+                                <td colspan='2'>
+                                       <h6 style='text-align:center'> Date completed: ".$row["recieved_date"]."</h6>   
+                                </td>
+
+                                <td >  
+                                <h6 style='text-align:center'> Collected by: ".$row["collected_by"]."</h6> 
+                                </td>
+
+                                <td colspan='2'>
+                                <h6 style='text-align:center'> Recieved by: ".$row["recieved_by"]."</h6>
+                                 </td>
+                            </tr>
                         </tbody>
 
                         </table>
@@ -582,6 +585,30 @@
      }
         }
     }
+    else{
+        echo "
+            
+        <div class='vh-100 d-flex justify-content-center align-items-center' id='cardshow'>
+        <div class='col-md-4'>
+            
+            <div class='card  bg-white shadow p-5' style='margin-top:10% important'>
+                <div class='mb-4 text-center'>
+
+                </div>
+                <div class='text-center'>
+                    <h5 style='font-weight: bold'>Completed Requisitions!</h5>
+                    <hr>
+                    <p>There are no recompleted requisions at the this time</p>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+            ";
+    }
+    
+
+}
 ?>
                 
                             
@@ -661,7 +688,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Log out?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Logout?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>

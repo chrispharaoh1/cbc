@@ -98,7 +98,7 @@ $role = "";
                         }
                         
                         elseif($row['role'] == 'engineer'){
-                            header('Location: ForemanIndex.php?id='.$row['id']); die();
+                            header('Location: EngineerIndex.php?id='.$row['id']); die();
                             
                         }else{
                             $errors3 = "Unknown user";

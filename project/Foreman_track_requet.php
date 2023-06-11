@@ -1,5 +1,5 @@
 <?php
- require("security.php"); 
+ require("security2.php"); 
  $currentStage = "";
  $perMessage = "Hello"; 
  $messageName = "";
@@ -81,7 +81,7 @@
 
            <!-- Nav Item - Dashboard -->
            <li class="nav-item active">
-           <a class="nav-link" href="">
+           <a class="nav-link" href="ForemanPrevOders.php">
            <i class="fas fa-arrow-left"></i>
            <span>Previous orders</span></a>
            </li>
@@ -342,8 +342,8 @@
                <?php 
                     include('db_connection.php'); 
 
-                    $query = "SELECT * FROM `orders` WHERE status<6 AND employee_id = '$userID'";
-                    $status = "SELECT status FROM `orders` where status<6";
+                    $query = "SELECT * FROM `orders` WHERE status < 5 AND employee_id = $userID";
+                    $status = "SELECT status FROM `orders` where status < 5";
 
                     $result_step = mysqli_query($MySQLDb,$query);
 
@@ -364,7 +364,7 @@
                                 <div class='row' id='report-wraper'>
 
 
-                                <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
+                                <h2 style='margin:auto'>Requisition ID: ". $row["fullpgcode"] ."</h2>
 
                                  <table class='content-table' style='width:100%'>
                                     <thead>
@@ -694,15 +694,17 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Log out?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-body">Are you sure you want to log out?</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <form action="logout.php" method="post">
+                        <button type="submit" name="logout" class="btn btn-primary" >Logout</button>
+                    </form>
                 </div>
             </div>
         </div>

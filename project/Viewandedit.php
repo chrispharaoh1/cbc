@@ -1,5 +1,5 @@
 <?php 
-    require("security2.php"); 
+    require("security3.php"); 
     include('db_connection.php'); 
 
         if($_SESSION["userID"]){
@@ -10,12 +10,15 @@
             $query = "SELECT * FROM `requested_items` WHERE status1=1 AND employee_id = $id";
             $count = "SELECT COUNT(*) FROM requested_items WHERE status1=1 AND employee_id = $id";        
 
-            if ($rst = mysqli_query($MySQLDb,$query))  {
-                if(mysqli_num_rows($rst)<1){
-                     header('Location: ForemanIndex.php?id'.$id); die();
-                }                
+            // if ($rst = mysqli_query($MySQLDb,$query))  {
+            //     if(mysqli_num_rows($rst)<1){
+            //          header('Location: ForemanIndex.php?id'.$id); die();
+            //     }                
                     
-            }
+            // }
+
+            $_SESSION["order"] = $_GET['order'];
+            $orderNumber = $_SESSION["order"];
 ?>
 
 <!DOCTYPE html>
@@ -52,52 +55,6 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
 
-        <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
-                <div class="sidebar-brand-icon rotate-n-15">
-                   <i class="fas fa-city"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">CBC Contractors</div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="">
-                <i class="fas fa-building"></i>
-                    <span>My work space</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-           <!-- Nav Item - Dashboard -->
-           <li class="nav-item active">
-           <a class="nav-link" href="ForemanPrevOders.php">
-           <i class="fas fa-arrow-left"></i>
-           <span>Previous orders</span></a>
-           </li>
-
-                       <!-- Divider -->
-           <hr class="sidebar-divider my-0">
-
-           <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-            <a class="nav-link" href="Foreman_track_requet.php">
-            <i class="fas fa-clock"></i>
-            <span>Current orders</span></a>
-            </li>
-
-
-
-        </ul>
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -113,20 +70,6 @@
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
-
-                    <!-- Topbar Search -->
-                    <form
-                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                                aria-label="Search" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -312,46 +255,35 @@
                         $_midleNumber ="";
 
                        //Query for retrieving recent LAST row in the database
-                        $sql_query = "SELECT * FROM orders ORDER BY requisition_number DESC LIMIT 1"; 
+                        $sql_query = "SELECT * FROM orders WHERE requisition_number=$orderNumber"; 
                         $query_result = mysqli_query($MySQLDb,$sql_query);
     
 
                         if(mysqli_num_rows($query_result)>0){
                               $row = $query_result->fetch_assoc();
-                              $req_order = $row["requisition_number"] + 1;
-
-                              if($row["requisition_number"] < 10 ){
-                                $_midleNumber ="00";
-                              }
-                              elseif($row["requisition_number"] < 100 ){
-                                $_midleNumber ="0";
-                              }
-                              else{
-                                $_midleNumber ="";
-                              }
-                           }   else{
-                               $req_order = '1';
-                               $_midleNumber ="00";
+                              $orderNumber = $row["requisition_number"];
+                              $today = $row["order_time"];
+                              $daterequired = $row["date_required"];
+                              $deliveryPlace = $row["place_of_delivery"]; 
+                              $Contract = $row["contract_number"];
                            } 
 
                  ?>          
             <form  method="POST" action="Foreman_send_request.php">
                  
                 <input type="number" style="text-align: center !important; background-color:#c8cbcf; color:red" class="form-control form-control-user"
-                id="exampleInputPassword" name="projectcode" value="<?php echo $req_order;?>" ></input>
-
-                <input type="hidden" name="hidden" value="<?php echo $pgID."".$_midleNumber.$req_order?>"></input>
+                id="exampleInputPassword" name="projectcode" value="<?php echo $orderNumber;?>" ></input>
                 
                 &#160 &#160 &#160 &#160 &#160
                 <div class="row" id="top-ele">
                 <div class="form-group">
-                <input type="number"  class="form-control form-control-user"
+                <input type="number" value="<?php echo $Contract ;?>" class="form-control form-control-user"
                 id="exampleInputPassword" name="contract" placeholder="CONTRACT No."></input>
                 </div>
 
                 &#160 &#160 &#160 &#160 &#160
                 <div class="form-group">
-                <input type="text" class="form-control form-control-user"
+                <input type="text" value="<?php echo $deliveryPlace;?>" class="form-control form-control-user"
                 id="exampleInputPassword" name="place" placeholder="Place of delivery"></input>
                 </div>
 
@@ -360,19 +292,19 @@
                 &#160 &#160 &#160 &#160 &#160
                 <div class="form-group">  
                 <input type="text" class="form-control form-control-user"
-                id="exampleInputPassword" onfocus="(this.type='date')" name="date_required" placeholder="Date required"></input>
+                id="exampleInputPassword" onfocus="(this.type='date')" name="date_required" value="<?php echo $daterequired;?>" placeholder="Date required"></input>
+                </div>
+
+                &#160 &#160 &#160 &#160 &#160
+                <div class="form-group">  
+                <input type="text" class="form-control form-control-user"
+                id="exampleInputPassword" name="todayDate" value="<?php echo $today;?>" onfocus="(this.type='date')" placeholder="Todays date"></input>
                 </div>
 
                 &#160 &#160 &#160 &#160 &#160
                 <td> <button type="submit" name="send" class="btn btn-primary"><i class="far fa-paper-plane"></i>&#160 Send request</button></td> 
 
-                <div class="row">
-                &#160
-                <div class="form-group">  
-                <input type="text" class="form-control form-control-user"
-                id="exampleInputPassword" name="todayDate" onfocus="(this.type='date')" placeholder="Todays date"></input>
-                </div>
-                </div>
+
             </form>
          </div>
                            
@@ -398,14 +330,19 @@
 
             <!-- PHP code to display data in the table -->
             <?php 
+                
+               
+
+
                include('db_connection.php'); 
 
-               $query = "SELECT * FROM `requested_items` WHERE status1=1 AND employee_id = $id";
+               $query = "SELECT * FROM `requested_items` WHERE status1=1 AND employee_id = $id OR requisition_number=$orderNumber";
                $count = "SELECT COUNT(*) FROM requested_items WHERE status1=1";
 
                $result = mysqli_query($MySQLDb,$query);
                $countResult = mysqli_query($MySQLDb,$count);
 
+            if($result ){
                while($row = $result->fetch_assoc() ){
 
                  echo  "<tr>
@@ -413,16 +350,17 @@
                             <td style='text-align:left'>".$row["description1"]."</td>
                             <td>".$row["remarks"]."</td>
                             <td style='width:20%;' class='btn-delete'>
-                               <a  href='Foreman_edit.php?id=$row[id]' style='background: #009879' class='btn btn-primary'><i class='fas fa-pen'></i></a>
+                               <a  href='Engineer_item_edit.php?id=$row[id]' style='background: #009879' class='btn btn-primary'><i class='fas fa-pen'></i></a>
                                &#160
-                               <a href='Foreman_Delete.php?id=$row[id]' style='background: red' class='btn btn-primary'><i class='fas fa-trash'></i></a>
+                               <a href='Viewandedit_delete.php?id=$row[id]' id='delete' style='background: red' class='btn btn-primary'><i class='fas fa-trash'></i></a>
                             </td>
                    </tr>";
                
                 }
+            }
           ?>
         </tbody>
-
+                
       </table>
 
 
@@ -437,7 +375,7 @@
         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-   <form  method="POST" action="foreman_modal_process.php">
+   <form  method="POST" action="Viewandedit_process.php">
         <div class="form-outline">
         <textarea type="text" id="formControlDefault" class="form-control" name="item-name"  placeholder="MATERIAL NAME (DESCRIPTION)"></textarea>
         </div>
@@ -446,10 +384,12 @@
         <input type="number" id="formControlDefault" name="item-qty" class="form-control"  placeholder="QUANTITY"/>
         </div>
         <hr>
+
         <div class="form-outline">
-        <input type="text" id="formControlDefault" name="unit" class="form-control"  placeholder="UNIT"/>
+        <input type="text" id="formControlDefault" name="unit" class="form-control"  placeholder="UNIT"></input>
         </div>
         <hr>
+
         <div class="form-outline">
         <input type="text area" id="formControlDefault" name="remarks"class="form-control"  placeholder="REMARKS"/>
         </div>

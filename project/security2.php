@@ -1,7 +1,7 @@
 <?php
 session_start();
     //securing Managers files
-    if($_SESSION["role"] == "manager"){
+    if($_SESSION["role"] == "supervisor" || $_SESSION["role"] == "foreman"){
 
     }
     else{

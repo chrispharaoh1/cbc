@@ -1,15 +1,24 @@
-<?php
- require("security.php"); 
- $currentStage = "";
- $perMessage = "Hello"; 
- $messageName = "";
- $userID = "";
- $projectID = "";
- if(isset($_SESSION["userID"])){
-    $projectID = $_GET['id'];
- }
- 
+<?php 
+require("security3.php"); 
+   // require("security3.php"); 
+    include('db_connection.php'); 
+
+        if($_SESSION["userID"]){
+           $id = $_SESSION["userID"];
+          $pgID = $_SESSION["projectID"];
+        }
+              
+            $query = "SELECT * FROM `requested_items` WHERE status1=1 AND employee_id = $id";
+            $count = "SELECT COUNT(*) FROM requested_items WHERE status1=1 AND employee_id = $id";        
+
+            // if ($rst = mysqli_query($MySQLDb,$query))  {
+            //     if(mysqli_num_rows($rst)<1){
+            //          header('Location: ForemanIndex.php?id'.$id); die();
+            //     }                
+                    
+            // }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,30 +34,18 @@
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/mytable.css">
+    
+
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="css/step-progress.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
-    <link rel="stylesheet" href="css/mytable.css">
 
-    <style>
-        #report-wraper{
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-            transition: 0.3s;
-            border-radius: 10px; /* 5px rounded corners */
-            background: #fafcfa;
-        }
+    <script type="text/javascript" src="js/main.js"></script>
 
-        table{
-            width: 99% !important;
-        }
-    </style>
-    
 </head>
 
 <body id="page-top">
@@ -72,10 +69,33 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="ForemanIndex.php">
-                
-                    <span>Current Requisitions</span></a>
+                <a class="nav-link" href="">
+                <i class="fas fa-building"></i>
+                    <span>My work space</span></a>
             </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+           <!-- Nav Item - Dashboard -->
+           <li class="nav-item active">
+           <a class="nav-link" href="ForemanPrevOders.php">
+           <i class="fas fa-arrow-left"></i>
+           <span>Previous orders</span></a>
+           </li>
+
+                       <!-- Divider -->
+           <hr class="sidebar-divider my-0">
+
+           <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+            <a class="nav-link" href="Foreman_track_requet.php">
+            <i class="fas fa-clock"></i>
+            <span>Current orders</span></a>
+            </li>
+
 
 
         </ul>
@@ -95,6 +115,19 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
+                    <!-- Topbar Search -->
+                    <form
+                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                                aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -257,7 +290,7 @@
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
-
+ 
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -273,44 +306,147 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-                    
-                    <section class="step-wizard">
-                        <h6 style="text-align:center">Progress stage Key</h6>
-                         <ul class="step-wizard-list">
-                            <li class="step-wizard-item current-item">
-                                <span class="progress-count">1</span>
-                                <span class="progress-label">Requisition</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">2</span>
-                                <span class="progress-label">Engeneer Approval</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">3</span>
-                                <span class="progress-label">Manager Approval</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">4</span>
-                                <span class="progress-label">Procurement</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">5</span>
-                                <span class="progress-label">Recieving</span>
-                            </li>
-                            <li class="step-wizard-item">
-                                <span class="progress-count">6</span>
-                                <span class="progress-label">Done</span>
-                            </li>
-                        </ul>
-                    <br>
-                    </section>
+
+                <?php
+                     include('db_connection.php');
+
+                        $_midleNumber ="";
+
+                       //Query for retrieving recent LAST row in the database
+                        $sql_query = "SELECT * FROM orders ORDER BY requisition_number DESC LIMIT 1"; 
+                        $query_result = mysqli_query($MySQLDb,$sql_query);
+    
+
+                        if(mysqli_num_rows($query_result)>0){
+                              $row = $query_result->fetch_assoc();
+                              $req_order = $row["requisition_number"] + 1;
+
+                              if($row["requisition_number"] < 10 ){
+                                $_midleNumber ="00";
+                              }
+                              elseif($row["requisition_number"] < 100 ){
+                                $_midleNumber ="0";
+                              }
+                              else{
+                                $_midleNumber ="";
+                              }
+                           }   else{
+                               $req_order = '1';
+                               $_midleNumber ="00";
+                           } 
+
+                 ?>          
+            <form  method="POST" action="Foreman_send_request.php">
+                
+                 
+                <input type="number" style="text-align: center !important; background-color:#c8cbcf; color:red" class="form-control form-control-user"
+                id="exampleInputPassword" name="projectcode" value="<?php echo $req_order;?>" ></input>
+
+                <input type="hidden" name="hidden" value="<?php echo $pgID."".$_midleNumber.$req_order?>"></input>
+                
+                &#160 &#160 &#160 &#160 &#160
+                <div class="row" id="top-ele">
+                <div class="form-group">
+                <input type="number"  class="form-control form-control-user"
+                id="exampleInputPassword" name="contract" placeholder="CONTRACT No."></input>
+                </div>
+
+                &#160 &#160 &#160 &#160 &#160
+                <div class="form-group">
+                <input type="text" class="form-control form-control-user"
+                id="exampleInputPassword" name="place" placeholder="Place of delivery"></input>
+                </div>
+
+              
+           
+                &#160 &#160 &#160 &#160 &#160
+                <div class="form-group">  
+                <input type="text" class="form-control form-control-user"
+                id="exampleInputPassword" onfocus="(this.type='date')" name="date_required" placeholder="Date required"></input>
+                </div>
+
+                &#160 &#160 &#160 &#160 &#160
+                <td> <button type="submit" name="send" class="btn btn-primary"><i class="far fa-paper-plane"></i>&#160 Send request</button></td> 
+                           
+                <div class="row">
+                &#160
+                <div class="form-group">  
+                <input type="text" class="form-control form-control-user"
+                id="exampleInputPassword" name="todayDate" onfocus="(this.type='date')" placeholder="Todays date"></input>
+                </div>
+                </div>
+            </form>
+         </div>
+                           
+        <table class="content-tablee" style="widith: fit-content !important">
+        <tbody>
+          <tr class="tablee">        
+            <td> <button name="submit"  data-toggle="modal" data-target="#myModal" class="btn btn-primary"><i class="fas fa-plus"></i>&#160 Add new item</button></td>   
+          </tr>
+          </tbody>
+       </table>
+     
+
+    <table class="content-table" style="width:100%">
+        <thead>
+          <tr>
+            <th style="width:10%">Quantity</th>
+            <th style="width:40%">Description</th>
+            <th style="width:20%">Remarks</th>
+            <th style="width:20%">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+
+            <!-- PHP code to display data in the table -->
+            <?php 
+               include('db_connection.php'); 
+
+               $query = "SELECT * FROM `requested_items` WHERE status1=1 AND employee_id = $id";
+               $count = "SELECT COUNT(*) FROM requested_items WHERE status1=1";
+
+               $result = mysqli_query($MySQLDb,$query);
+               $countResult = mysqli_query($MySQLDb,$count);
+
+               while($row = $result->fetch_assoc() ){
+
+                 echo  "<tr>
+                            <td>". $row["quantity"] ."</td>
+                            <td style='text-align:left'>".$row["description1"]."</td>
+                            <td>".$row["remarks"]."</td>
+                            <td style='width:20%;' class='btn-delete'>
+                               <a  href='Foreman_edit.php?id=$row[id]' style='background: #009879' class='btn btn-primary'><i class='fas fa-pen'></i></a>
+                               &#160
+                               <a href='Engineer_delete.php?id=$row[id]' style='background: red' class='btn btn-primary'><i class='fas fa-trash'></i></a>
+                            </td>
+                   </tr>";
+               
+                }
+          ?>
+        </tbody>
+
+      </table>
 
 
-               <?php 
+      <div class='row'>
+             <!-- DataTales Example -->
+            <div class="card shadow mb-4" style="display:block; margin:auto;">
+                <div class="card-header py-3">
+                    <h4 class="text-gray-900" style="text-align:center">Current requsitions that requires your attention</h4>
+                </div>
+            <div class="card-body">
+
+
+
+
+
+
+      <?php 
+      
                     include('db_connection.php'); 
 
-                    $query = "SELECT * FROM `orders` WHERE status<5 AND `projectID` = $projectID";
-                    $status = "SELECT status FROM `orders` where status<6";
+                    $query = "SELECT * FROM `orders` WHERE status = 1 AND projectCode = '$pgID'";
+                    $status = "SELECT status FROM `orders` where status < 5";
 
                     $result_step = mysqli_query($MySQLDb,$query);
 
@@ -323,22 +459,21 @@
                            if($row["status"] == '1'){
                             $currentStage ="20%";
                             $perMessage = "Stage 2/6";
-                            $messageName = "Waiting site Engineer approval";
+                            $messageName = "Waiting your approval";
                             
-
+                            
                 
                         echo  "
                                 <div class='row' id='report-wraper'>
 
 
-                                <h2 style='margin:auto'>Requisition: ". $row["fullpgcode"] ."</h2>
+                                <h2 style='margin:auto'>Requisition ID: ". $row["fullpgcode"] ."</h2>
 
                                  <table class='content-table' style='width:100%'>
-                                    <thead>
-                                        <tr>
+                                    <thead >
+                                        <tr class='bg-gradient-info'>
                                             <th >Order No.</th>
                                             <th style='text-align:center'>Contract No.</th>
-                                            <th style='text-align:center'>Issued by</th>
                                             <th style='text-align:center'>Ordered by</th>
                                             <th style='text-align:right'>Issue Date</th>
                                         </tr>
@@ -352,17 +487,31 @@
                                             <td><h6>". $row["requisition_number"] ."</h6></td>
                                             <td style='text-align:center'><h6>".$row["contract_number"]."</h6></td>
                                             <td style='text-align:center'><h6>".$row["employee_id"]."</h6></td>
-                                            <td style='text-align:center'><h6>".$row["issued_by"]."</h6></td>
                                             <td style='text-align:right'><h6>".$row["order_date"]."</h6></td>
                                         </tr>   
                                         <tr>
-                                            <td colspan='5'> 
+                                            <td colspan='4'> 
                                                 <h6 style='text-align:center'>Current stage: <i  class='fas fa-clock'></i><span style='font-weight:bold'>" .$messageName."</span><h6>
                                                 <div class='progress' style='height: 20px;'>
                                                 <div class='progress-bar bg-warning' role='progressbar' style='width: ".$currentStage."' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100'>".$perMessage."</div>
                                                 </div>
                                             </td>  
                                         </tr> 
+                                        <tr >
+                                            <td style='display:block;margin-right:10%;'>
+                                               
+                                            </td>
+
+                                            <td>
+                                                <a href='Viewandedit.php?order=".$row["requisition_number"]."' class='btn btn-info btn-sm'>View & Edit</a>
+                                            </td>
+                                            <td>
+                                                <a href='OderDelete.php?order=".$row["requisition_number"]."' class='btn btn-warning btn-sm'>Delete</a>
+                                            </td>
+                                            <td>
+                                                <a href='Orderforward.php?order=".$row["requisition_number"]."' class='btn btn-success btn-sm'>Foward</a>
+                                            </td>
+                                        </tr>
                                     </tbody>
 
                                     </table>
@@ -371,222 +520,23 @@
                             <hr>
                             &#160 &#160 &#160&#160&#160&#160 &#160";
                  }
-                 // sate 2 means engineer approved and waiting for manager
-                 if($row["status"] == '2'){
-                    $currentStage ="40%";
-                    $perMessage = "Stage 3/6";
-                    $messageName = "Waiting Manager approval";
-                    
-
-        
-                echo  "
-                        <div class='row' id='report-wraper'>
-
-
-                        <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
-
-                         <table class='content-table' style='width:100%'>
-                            <thead>
-                                <tr>
-                                    <th >Order No.</th>
-                                    <th style='text-align:center'>Contract No.</th>
-                                    <th style='text-align:center'>Issued by</th>
-                                    <th style='text-align:center'>Ordered by</th>
-                                    <th style='text-align:right'>Issue Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                 <!-- PHP code to display data in the table -->
-
-
-                                <tr>
-                                    <td><h6>". $row["requisition_number"] ."</h6></td>
-                                    <td style='text-align:center'><h6>".$row["contract_number"]."</h6></td>
-                                    <td style='text-align:center'><h6>".$row["employee_id"]."</h6></td>
-                                    <td style='text-align:center'><h6>".$row["issued_by"]."</h6></td>
-                                    <td style='text-align:right'><h6>".$row["order_date"]."</h6></td>
-                                </tr>   
-                                <tr>
-                                    <td colspan='5'> 
-                                        <h6 style='text-align:center'>Current stage: <i  class='fas fa-clock'></i><span style='font-weight:bold'>" .$messageName."</span><h6>
-                                        <div class='progress' style='height: 20px;'>
-                                        <div class='progress-bar bg-info' role='progressbar' style='width: ".$currentStage."' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100'>".$perMessage."</div>
-                                        </div>
-                                    </td>  
-                                </tr> 
-                            </tbody>
-
-                            </table>
-
-                    </div>
-                    <hr>
-                    &#160 &#160 &#160&#160&#160&#160 &#160";
+                }
             }
+             ?>
 
-            //Manager approved waiting procurement team to deliver
-         if($row["status"] == '3'){
-            $currentStage ="60%";
-            $perMessage = "Stage 4/6";
-            $messageName = "Waiting consignment";
-            
+        </div>
+    </div>
+</div>
 
 
-        echo  "
-                <div class='row' id='report-wraper'>
 
 
-                <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
-
-                 <table class='content-table' style='width:100%'>
-                    <thead>
-                        <tr>
-                            <th >Order No.</th>
-                            <th style='text-align:center'>Contract No.</th>
-                            <th style='text-align:center'>Issued by</th>
-                            <th style='text-align:center'>Ordered by</th>
-                            <th style='text-align:right'>Issue Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                         <!-- PHP code to display data in the table -->
 
 
-                        <tr>
-                            <td><h6>". $row["requisition_number"] ."</h6></td>
-                            <td style='text-align:center'><h6>".$row["contract_number"]."</h6></td>
-                            <td style='text-align:center'><h6>".$row["employee_id"]."</h6></td>
-                            <td style='text-align:center'><h6>".$row["issued_by"]."</h6></td>
-                            <td style='text-align:right'><h6>".$row["order_date"]."</h6></td>
-                        </tr>   
-                        <tr>
-                            <td colspan='5'> 
-                                <h6 style='text-align:center'>Current stage: <i  class='fas fa-clock'></i><span style='font-weight:bold'>" .$messageName."</span><h6>
-                                <div class='progress' style='height: 20px;'>
-                                <div class='progress-bar' role='progressbar' style='width: ".$currentStage."' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100'>".$perMessage."</div>
-                                </div>
-                            </td>  
-                        </tr> 
-                    </tbody>
-
-                    </table>
-
-            </div>
-            <hr>
-            &#160 &#160 &#160&#160&#160&#160 &#160";
-            }
-
-            if($row["status"] == '4'){
-                $currentStage ="80%";
-                $perMessage = "Stage 5/6";
-                $messageName = "Waiting goods recieved note";
-                
-
-    
-            echo  "
-                    <div class='row' id='report-wraper'>
 
 
-                    <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
 
-                     <table class='content-table' style='width:100%'>
-                        <thead>
-                            <tr>
-                                <th >Order No.</th>
-                                <th style='text-align:center'>Contract No.</th>
-                                <th style='text-align:center'>Issued by</th>
-                                <th style='text-align:center'>Ordered by</th>
-                                <th style='text-align:right'>Issue Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                             <!-- PHP code to display data in the table -->
-
-
-                            <tr>
-                                <td><h6>". $row["requisition_number"] ."</h6></td>
-                                <td style='text-align:center'><h6>".$row["contract_number"]."</h6></td>
-                                <td style='text-align:center'><h6>".$row["employee_id"]."</h6></td>
-                                <td style='text-align:center'><h6>".$row["issued_by"]."</h6></td>
-                                <td style='text-align:right'><h6>".$row["order_date"]."</h6></td>
-                            </tr>   
-                            <tr>
-                                <td colspan='5'> 
-                                    <h6 style='text-align:center'>Current stage: <i  class='fas fa-clock'></i><span style='font-weight:bold'>" .$messageName."</span><h6>
-                                    <div class='progress' style='height: 20px;'>
-                                    <div class='progress-bar bg-success' role='progressbar' style='width: ".$currentStage."' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100'>".$perMessage."</div>
-                                    </div>
-                                </td>  
-                            </tr> 
-                        </tbody>
-
-                        </table>
-
-                </div>
-                <hr>
-                &#160 &#160 &#160&#160&#160&#160 &#160";
-            }
-
-            if($row["status"] == '5'){
-                $currentStage ="100%";
-                $perMessage = "Stage 6/6";
-                $messageName = "Requisition completed ";
-                
-
-    
-            echo  "
-                    <div class='row' id='report-wraper'>
-
-
-                    <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
-
-                     <table class='content-table' style='width:100%'>
-                        <thead>
-                            <tr>
-                                <th >Order No.</th>
-                                <th style='text-align:center'>Contract No.</th>
-                                <th style='text-align:center'>Issued by</th>
-                                <th style='text-align:center'>Ordered by</th>
-                                <th style='text-align:right'>Issue Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                             <!-- PHP code to display data in the table -->
-
-
-                            <tr>
-                                <td><h6>". $row["requisition_number"] ."</h6></td>
-                                <td style='text-align:center'><h6>".$row["contract_number"]."</h6></td>
-                                <td style='text-align:center'><h6>".$row["employee_id"]."</h6></td>
-                                <td style='text-align:center'><h6>".$row["issued_by"]."</h6></td>
-                                <td style='text-align:right'><h6>".$row["order_date"]."</h6></td>
-                            </tr>   
-                            <tr>
-                                <td colspan='5'> 
-                                    <h6 style='text-align:center'><span style='font-weight:bold;color:green'>" .$messageName."<i class='fas fa-check'></i></span><h6>
-                                    <div class='progress' style='height: 20px;'>
-                                    <div class='progress-bar' role='progressbar' style='width: ".$currentStage.";background-color:green' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100'>".$perMessage."</div>
-                                    </div>
-                                </td>  
-                            </tr> 
-                        </tbody>
-
-                        </table>
-
-                </div>
-                <hr>
-                &#160 &#160 &#160&#160&#160&#160 &#160";
-     }
-        }
-    }
-?>
-                
-                            
 <div class="row">
-
 <!-- modal -->
 <div class="modal" tabindex="-1" id="myModal">
   <div class="modal-dialog">
@@ -596,7 +546,7 @@
         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-   <form  method="POST" action="foreman_modal_process.php">
+   <form  method="POST" action="Engineer_edit.php">
         <div class="form-outline">
         <textarea type="text" id="formControlDefault" class="form-control" name="item-name"  placeholder="MATERIAL NAME (DESCRIPTION)"></textarea>
         </div>
@@ -605,6 +555,12 @@
         <input type="number" id="formControlDefault" name="item-qty" class="form-control"  placeholder="QUANTITY"/>
         </div>
         <hr>
+
+        <div class="form-outline">
+        <input type="text" id="formControlDefault" name="unit" class="form-control"  placeholder="UNIT"></input>
+        </div>
+        <hr>
+
         <div class="form-outline">
         <input type="text area" id="formControlDefault" name="remarks"class="form-control"  placeholder="REMARKS"/>
         </div>
@@ -620,7 +576,67 @@
   </div>
 </div>
 
+<!-- modal 2 for UPDATING -->
+<div class="modal" tabindex="-1" id="myModal2">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update material</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+       </div>
+        <div class="modal-body">
+       <form  method="POST" action="Engineer_edit.php">
+        <div class="form-outline">
+        <textarea type="text" id="formControlDefault" class="form-control" name="item-name"  placeholder="MATERIAL NAME (DESCRIPTION)"></textarea>
+        </div>
+        <hr>
+        <div class="form-outline">
+        <input type="number" id="formControlDefault" name="item-qty" class="form-control"  placeholder="QUANTITY"/>
+        </div>
+        <hr>
+        <div class="form-outline">
+        <input type="text" id="formControlDefault" name="unit" class="form-control"  placeholder="UNIT"/>
+        </div>
+        <hr>
+        <div class="form-outline">
+        <input type="text area" id="formControlDefault" name="remarks"class="form-control"  placeholder="REMARKS"/>
+        </div>
 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" style="background: #eb927c" data-dismiss="modal">Cancel</button>
+        <button type="Reset" class="btn btn-secondary" >Reset</button>
+        <button type="submit" name="submit" class="btn btn-primary"><i class="fas fa-save"></i> &#160 Save</button>
+      </div>
+    </div>
+</form>
+  </div>
+</div>
+
+<!-- modal 3 for Deleting  user-->
+<div class="modal" tabindex="-1" id="myModal3">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+          </div>
+           <div class="modal-body">
+           <form  method="POST" action="Foreman_Delete.php">
+
+            <p>Are you sure you want to delete this item?</p>
+            
+         </div>
+          <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" style="background: #eb927c" data-dismiss="modal">Cancel</button>
+        <button type="submit" name="submit" style="background:red"class="btn btn-primary"><i class="fas fa-trash"></i> &#160 Delete</button>
+      </div>
+    </div>
+</form>
+
+
+  </div>
+</div>
 
 <!-- Pie Chart -->
 <div class="col-xl-4 col-lg-5">
@@ -628,7 +644,7 @@
 </div>
 </div>
 
-                </div>
+        </div>
                 <!-- /.container-fluid -->           
 
             </div>
@@ -661,7 +677,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Log out?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Log Out?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -670,7 +686,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                     <form action="logout.php" method="post">
-                        <button type="submit" name="logout" class="btn btn-primary" >Logout</button>
+                         <button type="submit" name="logout" class="btn btn-primary" >Logout</button>
                     </form>
                 </div>
             </div>
