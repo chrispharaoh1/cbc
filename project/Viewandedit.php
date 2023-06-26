@@ -269,8 +269,10 @@
                            } 
 
                  ?>          
-            <form  method="POST" action="Foreman_send_request.php">
-                 
+            <form  method="POST" action="Update_engineer.php">
+                
+                <input type="hidden" name="projectID" value="<?php echo $orderNumber;?>"></input>
+
                 <input type="number" style="text-align: center !important; background-color:#c8cbcf; color:red" class="form-control form-control-user"
                 id="exampleInputPassword" name="projectcode" value="<?php echo $orderNumber;?>" ></input>
                 

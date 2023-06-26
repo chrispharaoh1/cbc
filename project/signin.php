@@ -73,7 +73,7 @@ $role = "";
                         $_SESSION["projectID"] =  $projectID;
 
                         if($row['role'] == 'managing director'){
-                            header("Location: director.php"); die();
+                            header("Location: Director.php"); die();
                     
                         }
 
@@ -83,7 +83,7 @@ $role = "";
                         }
 
                         elseif($row['role'] == 'procurement officer'){
-                            //header("Location: ForemanIndex.php"); die();
+                            header("Location: Procurement_index.php"); die();
                            
                         }
 
@@ -124,7 +124,9 @@ $role = "";
 <title>CBC sign in</title>
 <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://use.fontawesome.com/releases/v5.7.2/css/all.css' rel='stylesheet'>
+<link href="css/sb-admin-2.min.css" rel="stylesheet">
 <style>@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
 
 * {
     padding: 0;

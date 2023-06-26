@@ -8,5 +8,5 @@ include('db_connection.php');
         $MySQLDb->query($sql);
     }
     
-    header("Location: EngineerIndex.php"); die();
+    header("Location: Project_index.php"); die();
 ?>

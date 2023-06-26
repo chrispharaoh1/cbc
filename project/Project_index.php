@@ -227,59 +227,122 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <?php
+
+function time_elapsed_string($datetime, $full = true) {
+$now = new DateTime;
+$ago = new DateTime($datetime);
+$diff = $now->diff($ago);
+
+$diff->w = floor($diff->d / 7);
+$diff->d -= $diff->w * 7;
+
+$string = array(
+'y' => 'year',
+'m' => 'month',
+'w' => 'week',
+'d' => 'day',
+'h' => 'hour',
+'i' => 'minute',
+'s' => 'second',
+);
+foreach ($string as $k => &$v) {
+ if ($diff->$k) {
+     $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+    } else {
+ unset($string[$k]);
+ }
+ }
+
+if (!$full) $string = array_slice($string, 0, 1);
+return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+//end of time format
+ $noteCount = ""; 
+ $pg = $_SESSION["projectID"];                          
+include('db_connection.php');
+
+//$time = time_elapsed_string('2023-06-20 02:02:35');
+//Query for retrieving recent LAST row in the database
+$sql_query = "SELECT * FROM orders WHERE status > 2 ORDER BY requisition_number DESC LIMIT 3"; 
+$query_result = mysqli_query($MySQLDb,$sql_query);
+
+if($query_result){
+if(mysqli_num_rows($query_result)>0){
+
+    
+
+    $noteCount = mysqli_num_rows($query_result);
+     if($noteCount>=4){
+        $noteCount = "3+";
+     }
+
+
+
+echo "
+    <span class='badge badge-danger badge-counter'>$noteCount</span>
+    </a>
+    <!-- Dropdown - Alerts -->
+    <div class='dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in'
+    aria-labelledby='alertsDropdown'>
+    <h6 class='dropdown-header'>
+        Note Notification 
+    </h6>
+";
+
+     while($row0 = $query_result->fetch_assoc()){
+        $geime = $row0["recievedtime"];
+        $gettime = $row0["deliverytime"];
+
+        $time0 = time_elapsed_string($geime);
+        $time = time_elapsed_string($gettime);
+
+        echo "
+        <a class='dropdown-item d-flex align-items-center'href='Manager_notification.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time</div>
+            <span class='font-weight-bold'>".$row0['delivery_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+        ";
+        
+        if($row0['recieve_note'] !== ""){
+            echo "
+  
+          <a class='dropdown-item d-flex align-items-center'href='Manager_notification.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time0</div>
+            <span class='font-weight-bold'>".$row0['recieve_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+            ";
+        }else{}
+     }
+    }
+}
+?>
                             </a>
-                            <!-- Dropdown - Alerts -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
+        
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
+                            
                         </li>
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
-                            </a>
+      
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
@@ -351,7 +414,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="Profile.php">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
@@ -376,17 +439,14 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
 
 
-                        <a href="Add_project.php">   
+                        <a style="style:none" href="Edit_project.php?id=<?php echo $id;?>">   
                             <button name="submit" id="hide1" class="btn btn-primary"><i class="fas fa-pen"></i>&#160 Edit this project</button>  
                         </a>  
                         
-                        <a href="Add_project.php">   
+                        <a href="Project_complete.php?id=<?php echo $id;?>">   
                             <button name="submit" id="hide2" style="background-color:green" class="btn btn-primary"><i class="fas fa-check-double"></i>&#160 Mark this project as complete</button>  
                         </a> 
 
-                        <a href="Add_project.php">   
-                             <button name="submit" id="hide3" style="background-color:red"  class="btn btn-primary"><i class='fas fa-trash'></i>&#160 Delete this project</button>  
-                        </a> 
                         <div class="form-check form-switch">
                         <input id="checkBox" class="form-check-input" onclick="showHide()" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
                         <label class="form-check-label" for="flexSwitchCheckDefault">Manage project</label>
@@ -425,6 +485,9 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
                                         $query = "SELECT * FROM `project` WHERE `id`= $id";
                                         $result = mysqli_query($MySQLDb,$query);
+                                        if ($result) {
+                                            
+                                        
                                         $row = $result->fetch_assoc();
 
                                         $engeneerID =$row["engineer"];
@@ -443,7 +506,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
                                                 
                                             
                                         </tr>";
-                                        
+                                    }
                                         ?>
                                     </tbody>
                                 </table>
@@ -454,18 +517,32 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
             </div>
 
-            <div class="row">
-                <div class="card" id="card"  style="width: 22rem;">
-                    <div class="card-body">
-                        <h5 class="card-title" id="hd" style="text-align:center">Ongoing Requisitions</h5>
-                        <span id="counter" class="badge badge-danger badge-counter">3+</span>
-                        <img class="ongoing" src="img/ongoing.png" alt="ongoing process">
-                        </img>
-                        <a href="ongoing.php?id=<?php echo $id;?>" id="link" class="btn btn-primary">Open</a>                        
-                    </div>
-                    
-                </div>
+            <?php
+                //$num = "0";
+                $query1 = "SELECT * FROM `orders` WHERE status >1 && status<5";
+                
 
+                if($num1 = mysqli_query($MySQLDb,$query1)){
+                    $rowc = mysqli_num_rows($num1);
+
+                    echo "
+                    <div class='row'>
+                    <div class='card' id='card'  style='width: 22rem;'>
+                        <div class='card-body'>
+                            <h5 class='card-title' id='hd' style='text-align:center'>Ongoing Requisitions</h5>
+                            <span id='counter' class='badge badge-danger badge-counter'>$rowc</span>
+                        
+                            <img class='ongoing' src='img/ongoing.png' alt='ongoing process'>
+                            </img>
+                            <a href='ongoing.php?id=$id' id='link' class='btn btn-primary'>Open</a>                        
+                        </div>
+                        
+                    </div>
+                        ";
+               
+            
+          
+            } ?>
             &#160 &#160 &#160
             <div class="card" id="card" style="width: 22rem;">
                 <div class="card-body">
@@ -571,7 +648,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
                                             </td>
 
                                             <td>
-                                                <a href='Viewandedit.php?order=".$row["requisition_number"]."' class='btn btn-info btn-sm'>View</a>
+                                                <a href='Project_view_data.php?order=".$row["requisition_number"]."' class='btn btn-info btn-sm'>View</a>
                                             </td>
                                             <td>
                                                 <a href='Reject.php?order=".$row["requisition_number"]."' class='btn btn-warning btn-sm'>Reject</a>
@@ -586,6 +663,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
                             </div>
                             <hr>
+                            
                             &#160 &#160 &#160&#160&#160&#160 &#160";
                  }
                 }

@@ -77,25 +77,25 @@ require("security3.php");
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-           <!-- Nav Item - Dashboard -->
-           <li class="nav-item active">
-           <a class="nav-link" href="ForemanPrevOders.php">
-           <i class="fas fa-arrow-left"></i>
-           <span>Previous orders</span></a>
-           </li>
-
-                       <!-- Divider -->
-           <hr class="sidebar-divider my-0">
-
-           <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-            <a class="nav-link" href="Foreman_track_requet.php">
+             <!-- Nav Item - Dashboard -->
+             <li class="nav-item active">
+            <a class="nav-link" href="Engine_track_request.php">
             <i class="fas fa-clock"></i>
             <span>Current orders</span></a>
             </li>
 
+                       <!-- Divider -->
+           <hr class="sidebar-divider my-0">
+
+           
+           <!-- Nav Item - Dashboard -->
+           <li class="nav-item active">
+           <a class="nav-link" href="EnginePrevOrder.php">
+           <i class="fas fa-arrow-left"></i>
+           <span>Previous orders</span></a>
+           </li>
+
+           <hr class="sidebar-divider my-0">
 
 
         </ul>
@@ -158,63 +158,139 @@ require("security3.php");
 
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                            <a class="nav-link dropdown-toggle" href="Engineer_notification.php" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <?php
+
+function time_elapsed_string($datetime, $full = true) {
+$now = new DateTime;
+$ago = new DateTime($datetime);
+$diff = $now->diff($ago);
+
+$diff->w = floor($diff->d / 7);
+$diff->d -= $diff->w * 7;
+
+$string = array(
+'y' => 'year',
+'m' => 'month',
+'w' => 'week',
+'d' => 'day',
+'h' => 'hour',
+'i' => 'minute',
+'s' => 'second',
+);
+foreach ($string as $k => &$v) {
+ if ($diff->$k) {
+     $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+    } else {
+ unset($string[$k]);
+ }
+ }
+
+if (!$full) $string = array_slice($string, 0, 1);
+return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+//end of time format
+ $noteCount = ""; 
+ $pg = $_SESSION["projectID"];                          
+include('db_connection.php');
+
+//$time = time_elapsed_string('2023-06-20 02:02:35');
+//Query for retrieving recent LAST row in the database
+$sql_query = "SELECT * FROM orders WHERE status > 2 AND projectCode='$pg' ORDER BY requisition_number DESC LIMIT 3"; 
+$query_result = mysqli_query($MySQLDb,$sql_query);
+
+if($query_result){
+if(mysqli_num_rows($query_result)>0){
+
+    
+
+    $noteCount = mysqli_num_rows($query_result);
+     if($noteCount>=4){
+        $noteCount = "3+";
+     }
+
+
+
+echo "
+    <span class='badge badge-danger badge-counter'>$noteCount</span>
+    </a>
+    <!-- Dropdown - Alerts -->
+    <div class='dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in'
+    aria-labelledby='alertsDropdown'>
+    <h6 class='dropdown-header'>
+        Note Notification 
+    </h6>
+";
+
+     while($row0 = $query_result->fetch_assoc()){
+        $geime = $row0["recievedtime"];
+        $gettime = $row0["deliverytime"];
+
+        $time0 = time_elapsed_string($geime);
+        $time = time_elapsed_string($gettime);
+
+        echo "
+        <a class='dropdown-item d-flex align-items-center'href='Engineer_notification.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time</div>
+            <span class='font-weight-bold'>".$row0['delivery_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+        ";
+        
+        if($row0['recieve_note'] !== ""){
+            echo "
+  
+          <a class='dropdown-item d-flex align-items-center'href='Engineer_notification.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time0</div>
+            <span class='font-weight-bold'>".$row0['recieve_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+            ";
+        }else{}
+     }
+    }
+}
+?>
+   
+
                             </a>
+
+                            <a class="dropdown-item text-center small text-gray-500" href="Engineer_notification.php">Show All Alerts</a>
+                            </div>
+                        </li>
+
+                            
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
+
+                                
+
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
                             </div>
                         </li>
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
-                            </a>
+
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
@@ -286,7 +362,7 @@ require("security3.php");
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="Profile.php">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
@@ -453,14 +529,38 @@ require("security3.php");
 
                     //$countResult = mysqli_query($MySQLDb,$count);
                     if($result = mysqli_query($MySQLDb,$query)){ 
+                        //$row1 = $result->fetch_assoc();
+                        
 
                         while($row = $result->fetch_assoc() ){ 
 
-                           if($row["status"] == '1'){
+                           if($row["status"] == '1' ){
                             $currentStage ="20%";
                             $perMessage = "Stage 2/6";
                             $messageName = "Waiting your approval";
                             
+                            $_note = $row["noteMessage"];
+
+                            if($_note != null){
+                                
+                                
+                                echo "
+                                <script>
+                                    var fade = document.getElementById('fade');
+                                    fade.style.display='block';
+                                </script>
+                                ";
+                            }
+                            else{
+                                
+                                $_note = "Not yet rejected";
+                                echo "
+                                <script>
+                                    var fade = document.getElementById('fade');
+                                    fade.style.display='none';
+                                </script>
+                                ";
+                            }
                             
                 
                         echo  "
@@ -502,7 +602,9 @@ require("security3.php");
                                                
                                             </td>
 
-                                            <td>
+                                            <td> 
+                                                <a data-toggle='modal' data-target='#myModal3' class='btn btn-info btn-sm'  id='fade' style='background:red;padding-left:2%;'>Rejection note</a>
+                                                &#160 &#160 &#160 &#160 &#160
                                                 <a href='Viewandedit.php?order=".$row["requisition_number"]."' class='btn btn-info btn-sm'>View & Edit</a>
                                             </td>
                                             <td>
@@ -518,6 +620,26 @@ require("security3.php");
 
                             </div>
                             <hr>
+
+                            <!-- modal 3 for Deleting  user-->
+                        <div class='modal' tabindex='-1' id='myModal3'>
+                            <div class='modal-dialog'>
+                                <div class='modal-content'>
+                                    <div class='modal-header'>
+                                        <h5 class='modal-title'>Rejection </h5>
+                                        <button type='button' class='btn-close' data-dismiss='modal' aria-label='Close'></button>
+                                    </div>
+                                <div class='modal-body'>
+           
+                                <p>$_note;</p>
+                           </div>
+                     <div class='modal-footer'>
+            <button type='button' class='btn btn-secondary' style='background: #eb927c' data-dismiss='modal'>Ok</button>     
+      </div>
+    </div>
+</div>
+</div>
+
                             &#160 &#160 &#160&#160&#160&#160 &#160";
                  }
                 }
@@ -613,30 +735,6 @@ require("security3.php");
   </div>
 </div>
 
-<!-- modal 3 for Deleting  user-->
-<div class="modal" tabindex="-1" id="myModal3">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Delete</h5>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-          </div>
-           <div class="modal-body">
-           <form  method="POST" action="Foreman_Delete.php">
-
-            <p>Are you sure you want to delete this item?</p>
-            
-         </div>
-          <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" style="background: #eb927c" data-dismiss="modal">Cancel</button>
-        <button type="submit" name="submit" style="background:red"class="btn btn-primary"><i class="fas fa-trash"></i> &#160 Delete</button>
-      </div>
-    </div>
-</form>
-
-
-  </div>
-</div>
 
 <!-- Pie Chart -->
 <div class="col-xl-4 col-lg-5">

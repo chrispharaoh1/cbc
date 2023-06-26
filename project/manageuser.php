@@ -154,63 +154,125 @@
 
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                            <a class="nav-link dropdown-toggle" href="Manager_notification.php" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <?php
+
+function time_elapsed_string($datetime, $full = true) {
+$now = new DateTime;
+$ago = new DateTime($datetime);
+$diff = $now->diff($ago);
+
+$diff->w = floor($diff->d / 7);
+$diff->d -= $diff->w * 7;
+
+$string = array(
+'y' => 'year',
+'m' => 'month',
+'w' => 'week',
+'d' => 'day',
+'h' => 'hour',
+'i' => 'minute',
+'s' => 'second',
+);
+foreach ($string as $k => &$v) {
+ if ($diff->$k) {
+     $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+    } else {
+ unset($string[$k]);
+ }
+ }
+
+if (!$full) $string = array_slice($string, 0, 1);
+return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+//end of time format
+ $noteCount = ""; 
+ $pg = $_SESSION["projectID"];                          
+include('db_connection.php');
+
+//$time = time_elapsed_string('2023-06-20 02:02:35');
+//Query for retrieving recent LAST row in the database
+$sql_query = "SELECT * FROM orders WHERE status > 2 ORDER BY requisition_number DESC LIMIT 3"; 
+$query_result = mysqli_query($MySQLDb,$sql_query);
+
+if($query_result){
+if(mysqli_num_rows($query_result)>0){
+
+    
+
+    $noteCount = mysqli_num_rows($query_result);
+     if($noteCount>=4){
+        $noteCount = "3+";
+     }
+
+
+
+echo "
+    <span class='badge badge-danger badge-counter'>$noteCount</span>
+    </a>
+    <!-- Dropdown - Alerts -->
+    <div class='dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in'
+    aria-labelledby='alertsDropdown'>
+    <h6 class='dropdown-header'>
+        Note Notification 
+    </h6>
+";
+
+     while($row0 = $query_result->fetch_assoc()){
+        $geime = $row0["recievedtime"];
+        $gettime = $row0["deliverytime"];
+
+        $time0 = time_elapsed_string($geime);
+        $time = time_elapsed_string($gettime);
+
+        echo "
+        <a class='dropdown-item d-flex align-items-center'href='Manager_notification.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time</div>
+            <span class='font-weight-bold'>".$row0['delivery_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+        ";
+        
+        if($row0['recieve_note'] !== ""){
+            echo "
+  
+          <a class='dropdown-item d-flex align-items-center'href='Manager_notification.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time0</div>
+            <span class='font-weight-bold'>".$row0['recieve_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+            ";
+        }else{}
+     }
+    }
+}
+?>
                             </a>
-                            <!-- Dropdown - Alerts -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
+                            <a class="dropdown-item text-center small text-gray-500" href="Manager_notification.php">Show All Alerts</a>
+   
                         </li>
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
-                            </a>
+         
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
@@ -282,7 +344,7 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="Profile.php">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>

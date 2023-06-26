@@ -1,5 +1,6 @@
 <?php
  require("security2.php"); 
+ 
  $currentStage = "";
  $perMessage = "Hello"; 
  $messageName = "";
@@ -79,23 +80,21 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
+ 
+               <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+            <a class="nav-link" href="Foreman_track_requet.php">
+            <i class="fas fa-clock"></i>
+            <span>Current orders</span></a>
+            </li>
+
+
            <!-- Nav Item - Dashboard -->
            <li class="nav-item active">
            <a class="nav-link" href="ForemanPrevOders.php">
            <i class="fas fa-arrow-left"></i>
            <span>Previous orders</span></a>
            </li>
-
-                       <!-- Divider -->
-           <hr class="sidebar-divider my-0">
-
-           <!-- Nav Item - Dashboard -->
-           <li class="nav-item active">
-           <a class="nav-link" href="">
-           <i class="fas fa-clock"></i>
-           <span>Tract active requests</span></a>
-           </li>
-
 
 
         </ul>
@@ -162,59 +161,123 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                
+                                <?php
+
+function time_elapsed_string($datetime, $full = true) {
+$now = new DateTime;
+$ago = new DateTime($datetime);
+$diff = $now->diff($ago);
+
+$diff->w = floor($diff->d / 7);
+$diff->d -= $diff->w * 7;
+
+$string = array(
+'y' => 'year',
+'m' => 'month',
+'w' => 'week',
+'d' => 'day',
+'h' => 'hour',
+'i' => 'minute',
+'s' => 'second',
+);
+foreach ($string as $k => &$v) {
+ if ($diff->$k) {
+     $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+    } else {
+ unset($string[$k]);
+ }
+ }
+
+if (!$full) $string = array_slice($string, 0, 1);
+return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+//end of time format
+ $noteCount = ""; 
+ $myid = $_SESSION["userID"];                          
+include('db_connection.php');
+
+//$time = time_elapsed_string('2023-06-20 02:02:35');
+//Query for retrieving recent LAST row in the database
+$sql_query = "SELECT * FROM orders WHERE status > 2 AND employee_id=$myid ORDER BY requisition_number DESC LIMIT 3"; 
+$query_result = mysqli_query($MySQLDb,$sql_query);
+
+
+if(mysqli_num_rows($query_result)>0){
+
+    
+
+    $noteCount = mysqli_num_rows($query_result);
+     if($noteCount>=4){
+        $noteCount = "3+";
+     }
+
+
+
+echo "
+    <span class='badge badge-danger badge-counter'>$noteCount</span>
+    </a>
+    <!-- Dropdown - Alerts -->
+    <div class='dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in'
+    aria-labelledby='alertsDropdown'>
+    <h6 class='dropdown-header'>
+        Note Notification 
+    </h6>
+";
+
+     while($row0 = $query_result->fetch_assoc()){
+        $geime = $row0["recievedtime"];
+        $gettime = $row0["deliverytime"];
+
+        $time0 = time_elapsed_string($geime);
+        $time = time_elapsed_string($gettime);
+
+        echo "
+        <a class='dropdown-item d-flex align-items-center'href='Foreman_notifcation.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time</div>
+            <span class='font-weight-bold'>".$row0['delivery_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+        ";
+        
+        if($row0['recieve_note'] !== ""){
+            echo "
+  
+          <a class='dropdown-item d-flex align-items-center'href='Foreman_notifcation.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time0</div>
+            <span class='font-weight-bold'>".$row0['recieve_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+            ";
+        }else{}
+     }
+}
+?>
+
+
                             </a>
                             <!-- Dropdown - Alerts -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
+
                         </li>
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
-                            </a>
+
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
@@ -286,7 +349,7 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="Profile.php">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
@@ -337,6 +400,8 @@
                         </ul>
                     <br>
                     </section>
+
+     
 
 
                <?php 
@@ -416,7 +481,7 @@
                         <div class='row' id='report-wraper'>
 
 
-                        <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
+                        <h2 style='margin:auto'>Requisition: ". $row["fullpgcode"] ."</h2>
 
                          <table class='content-table' style='width:100%'>
                             <thead>
@@ -469,7 +534,7 @@
                 <div class='row' id='report-wraper'>
 
 
-                <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
+                <h2 style='margin:auto'>Requisition: ". $row["fullpgcode"] ."</h2>
 
                  <table class='content-table' style='width:100%'>
                     <thead>
@@ -517,51 +582,71 @@
                 
 
     
-            echo  "
-                    <div class='row' id='report-wraper'>
+                echo  "
+                <div class='row' id='report-wraper'>
 
 
-                    <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
+                <h2 style='margin:auto'>Requisition: ". $row["fullpgcode"] ."</h2>
+                <div class='table-responsive'>
+                 <table class='table table-bordered' id='dataTable' width='90%' cellspacing='0'>
+                    <thead>
+                        <tr>
+                            <th >Order No.</th>
+                            <th style='text-align:center'>Contract No.</th>
+                            <th style='text-align:center'>Place of delivery</th>
+                            <th style='text-align:right'>Date rquired</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                     <table class='content-table' style='width:100%'>
-                        <thead>
-                            <tr>
-                                <th >Order No.</th>
-                                <th style='text-align:center'>Contract No.</th>
-                                <th style='text-align:center'>Issued by</th>
-                                <th style='text-align:center'>Ordered by</th>
-                                <th style='text-align:right'>Issue Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                             <!-- PHP code to display data in the table -->
+                         <!-- PHP code to display data in the table -->
 
 
-                            <tr>
-                                <td><h6>". $row["requisition_number"] ."</h6></td>
-                                <td style='text-align:center'><h6>".$row["contract_number"]."</h6></td>
-                                <td style='text-align:center'><h6>".$row["employee_id"]."</h6></td>
-                                <td style='text-align:center'><h6>".$row["issued_by"]."</h6></td>
-                                <td style='text-align:right'><h6>".$row["order_date"]."</h6></td>
-                            </tr>   
-                            <tr>
-                                <td colspan='5'> 
-                                    <h6 style='text-align:center'>Current stage: <i  class='fas fa-clock'></i><span style='font-weight:bold'>" .$messageName."</span><h6>
-                                    <div class='progress' style='height: 20px;'>
-                                    <div class='progress-bar bg-success' role='progressbar' style='width: ".$currentStage."' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100'>".$perMessage."</div>
-                                    </div>
-                                </td>  
-                            </tr> 
-                        </tbody>
+                        <tr>
+                            <td><h6>". $row["requisition_number"] ."</h6></td>
+                            <td style='text-align:center'><h6>".$row["contract_number"]."</h6></td>
+                            <td style='text-align:center'><h6>".$row["place_of_delivery"]."</h6></td>
+                            <td style='text-align:right'><h6>".$row["date_required"]."</h6></td>
+                        </tr>   
+                        <tr style='margin-left:50%;margin-right:50%;'>
+                            <td colspan='5' > 
+                                <a href='Procurement_view_data.php?order=".$row["requisition_number"]."'   class='btn btn-primary'>View</a>
+                                <a href='ForDelivery_note.php?order=".$row["requisition_number"]."' class='btn btn-info'>Delivery note</a>
+                                <button name='submit'  data-toggle='modal' data-target='#myModal' class='btn btn-success'>Confirm Delivery</button>
+                            </td>  
+                        </tr> 
+                    </tbody>
 
-                        </table>
+                    </table>
 
+            </div>
+            <hr>
+            </div>
+
+            <!-- modal -->
+            <div class='modal' tabindex='-1' id='myModal'>
+              <div class='modal-dialog'>
+                <div class='modal-content'>
+                  <div class='modal-header'>
+                    <h5 class='modal-title'>Delivery note</h5>
+                    <button type='button' class='btn-close' data-dismiss='modal' aria-label='Close'></button>
+                  </div>
+                  <div class='modal-body'>
+ 
+                    Are you sure you want to confirm delivery?
+                  </div>
+                  <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary' style='ackground: #eb927c' data-dismiss='modal'>Cancel</button>
+                    <a href='confirm_delivery.php?order=".$row["requisition_number"]." class='btn btn-primary'>Confirm</a>
+                  </div>
                 </div>
-                <hr>
-                &#160 &#160 &#160&#160&#160&#160 &#160";
+
+            </div>
+            </div>
+            &#160 &#160 &#160&#160&#160&#160 &#160";
             }
 
+            
             if($row["status"] == '5'){
                 $currentStage ="100%";
                 $perMessage = "Stage 6/6";
@@ -573,7 +658,7 @@
                     <div class='row' id='report-wraper'>
 
 
-                    <h2 style='margin:auto'>Requisition: ". $row["requisition_number"] ."</h2>
+                    <h2 style='margin:auto'>Requisition: ". $row["fullpgcode"] ."</h2>
 
                      <table class='content-table' style='width:100%'>
                         <thead>

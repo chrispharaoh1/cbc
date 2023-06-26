@@ -1,4 +1,5 @@
 <?php
+require("security.php");
      include('db_connection.php'); 
 
      $superv = "SELECT * FROM employee WHERE role = 'supervisor'";

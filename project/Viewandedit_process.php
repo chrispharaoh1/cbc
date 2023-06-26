@@ -11,6 +11,8 @@ if(isset($_POST['submit'])){ //if form is submitted
     $unit = $_POST['unit'];
     $order = $_SESSION["order"];
 
+
+
     $query = "INSERT INTO `requested_items` (`remarks`, `quantity`, `description1`, `status1`, `employee_id`, `L.P.O. No`, `D/NOTE No.`,`unit`) VALUES ('$remarks','$quantity','$description','1','$id','','','$unit')"; 
                
 

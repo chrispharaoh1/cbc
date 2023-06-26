@@ -1,3 +1,6 @@
+<?php
+    require("security.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +12,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>CBC Contractors</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -37,81 +40,52 @@
                 </div>
                 <div class="sidebar-brand-text mx-3">CBC Contractors</div>
             </a>
+<!-- Divider -->
+<hr class="sidebar-divider my-0">
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
+<!-- Nav Item - Dashboard -->
+<li class="nav-item active">
+    <a class="nav-link" href="index.php">
+    <i class="fas fa-folder"></i>
+        <span>Projects</span></a>
+</li>
 
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="index.php">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
+<!-- Divider -->
+<hr class="sidebar-divider">
 
 
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                    <span>User management</span>
-                </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Select Action:</h6>
-                        <a class="collapse-item" href="registerUser.php">Register new user</a>
-                        <a class="collapse-item" href="manageuser.php">Delete or edit user</a>
-                    </div>
-                </div>
-            </li>
+<!-- Nav Item - Pages Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+        aria-expanded="true" aria-controls="collapseTwo">
+        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+        <span>User management</span>
+    </a>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Select Action:</h6>
+            <a class="collapse-item" href="registerUser.php">Register new user</a>
+            <a class="collapse-item" href="manageuser.php">Delete or edit user</a>
+        </div>
+    </div>
+</li>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider">
+<li class="nav-item">
+    <a class="nav-link" href="index_completed.php">
+    <i class="fas fa-check"></i>
+        <span>Completed projects</span></a>
+</li>
+<!-- Divider -->
+<hr class="sidebar-divider">
 
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                ORDER REQUESTS
-            </div>
+<!-- Heading -->
+<div class="sidebar-heading">
+    LOGS
+</div>
 
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="pendingOrder.php">
-                    
-                    <i class="far fa-hourglass"></i>
-                    <span>Pending orders</span></a>
-            </li>
-
-           <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="ApprovedOders.php">
-                <i class="fas fa-check"></i>
-                    <span>Approved orders</span></a>
-            </li>
-
-           <!-- Nav Item - Charts -->
-           <li class="nav-item">
-                <a class="nav-link" href="CompletedOrder.php">
-                    
-                    <i class="fas fa-check-double"></i>
-                    <span>Completed orders</span></a>
-            </li>
-
-           <!-- Nav Item - Charts -->
-           <li class="nav-item">
-                <a class="nav-link" href="RejectedRequests.php">
-                <i class="fas fa-ban"></i>
-                    <span>Rejected requests</span></a>
-            </li>
-
-           <!-- Divider -->
-           <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
+        <!-- Nav Item - Tables -->
+        <li class="nav-item">
+                <a class="nav-link" href="AuditLogs.php">
                 <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                     <span>Audit logs</span></a>
             </li>
@@ -188,59 +162,121 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
-                            </a>
-                            <!-- Dropdown - Alerts -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
+                                <?php
+
+function time_elapsed_string($datetime, $full = true) {
+$now = new DateTime;
+$ago = new DateTime($datetime);
+$diff = $now->diff($ago);
+
+$diff->w = floor($diff->d / 7);
+$diff->d -= $diff->w * 7;
+
+$string = array(
+'y' => 'year',
+'m' => 'month',
+'w' => 'week',
+'d' => 'day',
+'h' => 'hour',
+'i' => 'minute',
+'s' => 'second',
+);
+foreach ($string as $k => &$v) {
+ if ($diff->$k) {
+     $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+    } else {
+ unset($string[$k]);
+ }
+ }
+
+if (!$full) $string = array_slice($string, 0, 1);
+return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+//end of time format
+ $noteCount = ""; 
+ $pg = $_SESSION["projectID"];                          
+include('db_connection.php');
+
+//$time = time_elapsed_string('2023-06-20 02:02:35');
+//Query for retrieving recent LAST row in the database
+$sql_query = "SELECT * FROM orders WHERE status > 2 ORDER BY requisition_number DESC LIMIT 3"; 
+$query_result = mysqli_query($MySQLDb,$sql_query);
+
+if($query_result){
+if(mysqli_num_rows($query_result)>0){
+
+    
+
+    $noteCount = mysqli_num_rows($query_result);
+     if($noteCount>=4){
+        $noteCount = "3+";
+     }
+
+
+
+echo "
+    <span class='badge badge-danger badge-counter'>$noteCount</span>
+    </a>
+    <!-- Dropdown - Alerts -->
+    <div class='dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in'
+    aria-labelledby='alertsDropdown'>
+    <h6 class='dropdown-header'>
+        Note Notification 
+    </h6>
+";
+
+     while($row0 = $query_result->fetch_assoc()){
+        $geime = $row0["recievedtime"];
+        $gettime = $row0["deliverytime"];
+
+        $time0 = time_elapsed_string($geime);
+        $time = time_elapsed_string($gettime);
+
+        echo "
+        <a class='dropdown-item d-flex align-items-center'href='Manager_notification.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time</div>
+            <span class='font-weight-bold'>".$row0['delivery_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+        ";
+        
+        if($row0['recieve_note'] !== ""){
+            echo "
+  
+          <a class='dropdown-item d-flex align-items-center'href='Manager_notification.php'>
+        <div class='mr-3'>
+            <div class='icon-circle bg-primary'>
+                <i class='fas fa-file-alt text-white'></i>
+            </div>
+        </div>
+        <div>
+            <div class='small text-gray-500'>$time0</div>
+            <span class='font-weight-bold'>".$row0['recieve_note']."</span>
+            <span class='font-weight-bold'></span>
+        </div>
+    </a>
+            ";
+        }else{}
+     }
+    }
+}
+?>
+                        </a>
+                        <a class="dropdown-item text-center small text-gray-500" href="Manager_notification.php">Show All Alerts</a>
+
                         </li>
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
-                            </a>
+             
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
@@ -312,18 +348,11 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="Profile.php">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Settings
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Activity Log
-                                </a>
+ 
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -374,15 +403,17 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Log out?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-body">Are you sure you want to log out?</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <form action="logout.php" method="post">
+                         <button type="submit" name="logout" class="btn btn-primary" >Logout</button>
+                    </form>
                 </div>
             </div>
         </div>
